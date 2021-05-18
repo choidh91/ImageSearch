@@ -11,9 +11,6 @@
 1. 이미지 검색
 2. 검색 히스토리 저장
 
-![KakaoTalk_20210518_171622152](https://user-images.githubusercontent.com/52645793/118616776-f7162f80-b7fc-11eb-9018-a5a4c2cd4b3e.jpg)
-![KakaoTalk_20210518_171622152_01](https://user-images.githubusercontent.com/52645793/118616788-fa112000-b7fc-11eb-9cb7-42e82ed96370.jpg)
-
 
 사용 기술
 1. RecyclerView
