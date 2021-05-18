@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">이미지 검색</string>
+    <string name="search">검색</string>
+    <string name="input_keyword">검색어를 입력하세요</string>
+</resources>
