@@ -1,6 +1,9 @@
 package com.choidh.imagesearch.di
 
-import com.choidh.imagesearch.api.SearchApi
+import android.app.Application
+import androidx.room.Room
+import com.choidh.imagesearch.api.NaverApi
+import com.choidh.imagesearch.data.history.HistoryDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,13 +20,23 @@ object AppModule {
     @Singleton
     fun provideRetrofit(): Retrofit =
         Retrofit.Builder()
-            .baseUrl(SearchApi.BASE_URL)
-            .client(SearchApi.client())
+            .baseUrl(NaverApi.BASE_URL)
+            .client(NaverApi.client())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
     @Provides
     @Singleton
-    fun provideSearchApi(retrofit: Retrofit): SearchApi =
-        retrofit.create(SearchApi::class.java)
+    fun provideNaverApi(retrofit: Retrofit): NaverApi =
+        retrofit.create(NaverApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideDatabase(app: Application) =
+        Room.databaseBuilder(app, HistoryDatabase::class.java, "history_database")
+            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    fun provideTaskDao(db: HistoryDatabase) = db.historyDao()
 }

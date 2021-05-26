@@ -1,4 +1,4 @@
-package com.choidh.imagesearch.adapter
+package com.choidh.imagesearch.ui.history
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -13,11 +13,13 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.choidh.imagesearch.data.History
+import com.choidh.imagesearch.data.history.History
 import com.choidh.imagesearch.databinding.ItemHistoryBinding
 
-
-class HistoryAdapter(val clickListener: (History) -> Unit, val deleteClickListener: (String) -> Unit) :
+class HistoryAdapter(
+    val itemClickListener: (History) -> Unit,
+    val deleteClickListener: (String) -> Unit
+) :
     ListAdapter<History, HistoryAdapter.HistoryItemViewHolder>(diffUtil),
     Filterable {
 
@@ -27,6 +29,26 @@ class HistoryAdapter(val clickListener: (History) -> Unit, val deleteClickListen
 
     inner class HistoryItemViewHolder(private val binding: ItemHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.apply {
+                root.setOnClickListener {
+                    val position = bindingAdapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        val history = getItem(position)
+                        itemClickListener(history)
+                    }
+                }
+                buttonDelete.setOnClickListener {
+                    val position = bindingAdapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        val history = getItem(position)
+                        deleteClickListener(history.keyword)
+                    }
+                }
+            }
+        }
+
         fun bind(historyModel: History) {
 
             if (mFilterStr?.isNotEmpty() == true) {
@@ -45,17 +67,13 @@ class HistoryAdapter(val clickListener: (History) -> Unit, val deleteClickListen
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
                     }
-                    binding.keywordTextView.text = sp
+                    binding.textViewQuery.text = sp
                 } else {
-                    binding.keywordTextView.text = historyModel.keyword
+                    binding.textViewQuery.text = historyModel.keyword
                 }
             } else {
-                binding.keywordTextView.text = historyModel.keyword
+                binding.textViewQuery.text = historyModel.keyword
             }
-            binding.deleteButton.setOnClickListener {
-                deleteClickListener(historyModel.keyword.orEmpty())
-            }
-            binding.root.setOnClickListener { clickListener(historyModel) }
         }
     }
 
@@ -93,7 +111,7 @@ class HistoryAdapter(val clickListener: (History) -> Unit, val deleteClickListen
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                if(results?.values == null) {
+                if (results?.values == null) {
                     return
                 }
                 submitList(results?.values as MutableList<History>)
@@ -109,11 +127,13 @@ class HistoryAdapter(val clickListener: (History) -> Unit, val deleteClickListen
 
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<History>() {
+            override fun areItemsTheSame(oldItem: History, newItem: History) =
+                oldItem.id == newItem.id
+
             override fun areContentsTheSame(oldItem: History, newItem: History) =
                 oldItem == newItem
 
-            override fun areItemsTheSame(oldItem: History, newItem: History) =
-                oldItem.uid == newItem.uid
+
         }
     }
 }
